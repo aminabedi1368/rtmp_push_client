@@ -3,4 +3,5 @@ nginx:
   volumes:
    - ./website:/usr/share/nginx/html
   ports:
-   - "3000:80"
+   - "3070:80"
+   - "3071:3000"
