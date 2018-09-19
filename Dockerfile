@@ -1,11 +1,28 @@
-FROM registry.docker-cn.com/library/alpine:3.2
-RUN apk add --update nginx && rm -rf /var/cache/apk/*
-RUN mkdir -p /tmp/nginx/client-body
+FROM registry.docker-cn.com/library/ubuntu:latest
 
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY website /usr/share/nginx/html
+MAINTAINER amin abedi <amin.abedi.1368@gmail.com>
+
+RUN apt-get update \
+    && apt-get install -y \
+        nginx \
+        ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# forward request and error logs to docker log collector
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+	&& ln -sf /dev/stderr /var/log/nginx/error.log
+RUN rm -v /etc/nginx/nginx.conf
+
+# Add our custom configuration file to replace the original one
+ADD nginx.conf /etc/nginx/
+
+EXPOSE 80 443
 RUN apt-get update
-RUN apt-get install curl
-RUN apt-get install nodejs
-CMD ["nginx", "-g", "daemon off;"]
+RUN apt-get -y install curl
+RUN apt-get -y install wget
+RUN apt-get -y install nodejs
+RUN apt-get -y install npm
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
+
+

@@ -1,7 +1,7 @@
 nginx:
   build: .
   volumes:
-   - ./website:/usr/share/nginx/html
+   - ./:/var/www/html
   ports:
    - "3070:80"
    - "3071:3000"
